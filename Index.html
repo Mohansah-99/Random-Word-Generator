@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Word Generator | Spark Creativity</title>
+    <meta name="description" content="Generate random words instantly for creative writing, brainstorming, and word games. Customize your own word lists.">
+    <meta name="keywords" content="random word generator, creative writing, brainstorming tool, vocabulary builder, word game">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5649C0;
+            --secondary: #00CEFF;
+            --dark: #2D3436;
+            --light: #F5F6FA;
+            --accent: #FD79A8;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --error: #D63031;
+            
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            animation: shine 8s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(30deg) translate(-10%, -10%); }
+            100% { transform: rotate(30deg) translate(10%, 10%); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .generator-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+            transform: translateY(-30px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .word-display-section {
+            padding: 3rem 2rem;
+            text-align: center;
+            background: linear-gradient(to bottom right, white, #f8f9fa);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .word-display {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+            min-height: 5.5rem;
+            transition: var(--transition);
+            position: relative;
+            display: inline-block;
+        }
+
+        .word-display::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .word-display.active::after {
+            opacity: 1;
+            width: 120px;
+        }
+
+        .word-type {
+            font-size: 1.2rem;
+            color: var(--dark);
+            opacity: 0.7;
+            font-style: italic;
+            min-height: 1.5rem;
+        }
+
+        .generate-btn {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+        }
+
+        .generate-btn:hover::before {
+            left: 100%;
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        select {
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            font-family: inherit;
+            min-width: 180px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .word-list-section {
+            padding: 2rem;
+            background: #f8f9fa;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .word-list-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        h2::before {
+            content: "✏️";
+        }
+
+        .word-list-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .word-list-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: #f5f3ff;
+        }
+
+        .history {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .history-item {
+            background: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            border: 1px solid #eee;
+        }
+
+        .history-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: rgba(255,255,255,0.8);
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .word-display {
+                font-size: 3rem;
+            }
+            
+            .generator-container {
+                transform: translateY(-15px);
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Dynamic Word Generator</h1>
+            <p class="subtitle">Spark creativity with random words</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="generator-container">
+                <div class="word-display-section">
+                    <div id="wordDisplay" class="word-display">Ready</div>
+                    <div id="wordType" class="word-type"></div>
+                    
+                    <button id="generateBtn" class="generate-btn">
+                        <span class="btn-text">Generate Word</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                    
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="wordCategory">Category</label>
+                            <select id="wordCategory">
+                                <option value="all">All Words</option>
+                                <option value="nouns">Nouns</option>
+                                <option value="verbs">Verbs</option>
+                                <option value="adjectives">Adjectives</option>
+                                <option value="custom">Custom Only</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="wordLength">Length</label>
+                            <select id="wordLength">
+                                <option value="any">Any Length</option>
+                                <option value="short">Short (1-5 letters)</option>
+                                <option value="medium">Medium (6-9 letters)</option>
+                                <option value="long">Long (10+ letters)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="wordHistory" class="history"></div>
+                </div>
+                
+                <div class="word-list-section">
+                    <div class="word-list-container">
+                        <h2>Custom Word List</h2>
+                        <textarea id="wordList" class="word-list-textarea" placeholder="Enter your custom words here, separated by commas or new lines"></textarea>
+                        
+                        <div class="button-group">
+                            <button id="saveWords" class="btn btn-primary">Save Words</button>
+                            <button id="resetWords" class="btn btn-secondary">Reset to Default</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Privacy</a>
+                <a href="#" class="footer-link">Terms</a>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+            <p class="copyright">&copy; <span id="currentYear"></span> Dynamic Word Generator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Default word lists
+        const defaultWordLists = {
+            all: [],
+            nouns: [
+                'apple', 'mountain', 'ocean', 'book', 'computer',
+                'tree', 'house', 'car', 'phone', 'dog',
+                'cat', 'city', 'country', 'planet', 'universe',
+                'teacher', 'doctor', 'engineer', 'artist', 'writer',
+                'river', 'forest', 'desert', 'island', 'volcano'
+            ],
+            verbs: [
+                'run', 'jump', 'swim', 'think', 'create',
+                'build', 'destroy', 'imagine', 'write', 'read',
+                'speak', 'listen', 'learn', 'teach', 'grow',
+                'change', 'evolve', 'adapt', 'discover', 'explore',
+                'dance', 'sing', 'paint', 'compose', 'invent'
+            ],
+            adjectives: [
+                'happy', 'sad', 'angry', 'joyful', 'peaceful',
+                'colorful', 'bright', 'dark', 'light', 'heavy',
+                'fast', 'slow', 'big', 'small', 'tall',
+                'short', 'long', 'wide', 'narrow', 'deep',
+                'mysterious', 'magical', 'ancient', 'modern', 'futuristic'
+            ]
+        };
+
+        // Combine all words
+        defaultWordLists.all = [...defaultWordLists.nouns, ...defaultWordLists.verbs, ...defaultWordLists.adjectives];
+
+        // DOM elements
+        const wordDisplay = document.getElementById('wordDisplay');
+        const wordType = document.getElementById('wordType');
+        const generateBtn = document.getElementById('generateBtn');
+        const wordListTextarea = document.getElementById('wordList');
+        const saveWordsBtn = document.getElementById('saveWords');
+        const resetWordsBtn = document.getElementById('resetWords');
+        const wordCategory = document.getElementById('wordCategory');
+        const wordLength = document.getElementById('wordLength');
+        const wordHistory = document.getElementById('wordHistory');
+        const currentYear = document.getElementById('currentYear');
+
+        // State
+        let customWords = [];
+        let history = [];
+        let wordLists = JSON.parse(JSON.stringify(defaultWordLists));
+
+        // Initialize
+        function init() {
+            // Load custom words
+            const savedWords = localStorage.getItem('customWords');
+            if (savedWords) {
+                customWords = savedWords.split(',');
+                wordListTextarea.value = customWords.join(', ');
+            }
+
+            // Set current year
+            currentYear.textContent = new Date().getFullYear();
+
+            // Event listeners
+            generateBtn.addEventListener('click', generateRandomWord);
+            saveWordsBtn.addEventListener('click', saveCustomWords);
+            resetWordsBtn.addEventListener('click', resetToDefaultWords);
+
+            // Generate first word
+            generateRandomWord();
+        }
+
+        // Generate random word
+        function generateRandomWord() {
+            const category = wordCategory.value;
+            const lengthFilter = wordLength.value;
+
+            // Get word pool
+            let wordPool = [];
+            
+            if (category === 'custom') {
+                wordPool = [...customWords];
+            } else {
+                wordPool = [...wordLists[category]];
+                if (category === 'all') wordPool = [...wordPool, ...customWords];
+            }
+
+            // Filter by length
+            if (lengthFilter !== 'any') {
+                wordPool = wordPool.filter(word => {
+                    const len = word.length;
+                    if (lengthFilter === 'short') return len <= 5;
+                    if (lengthFilter === 'medium') return len >= 6 && len <= 9;
+                    if (lengthFilter === 'long') return len >= 10;
+                    return true;
+                });
+            }
+
+            // Check if we have words
+            if (wordPool.length === 0) {
+                showWord('No words available', '');
+                return;
+            }
+
+            // Select random word
+            const randomIndex = Math.floor(Math.random() * wordPool.length);
+            const selectedWord = wordPool[randomIndex].trim();
+
+            // Determine word type
+            let type = '';
+            if (category !== 'custom') {
+                if (category !== 'all') {
+                    type = category;
+                } else {
+                    if (defaultWordLists.nouns.includes(selectedWord)) type = 'noun';
+                    else if (defaultWordLists.verbs.includes(selectedWord)) type = 'verb';
+                    else if (defaultWordLists.adjectives.includes(selectedWord)) type = 'adjective';
+                }
+            }
+
+            // Display word
+            showWord(selectedWord, type);
+
+            // Add to history
+            addToHistory(selectedWord, type);
+        }
+
+        // Display word with animation
+        function showWord(word, type) {
+            wordDisplay.classList.remove('active', 'fade-in', 'pulse');
+            void wordDisplay.offsetWidth; // Trigger reflow
+            
+            wordDisplay.textContent = word;
+            wordType.textContent = type ? `(${type})` : '';
+            
+            wordDisplay.classList.add('active', 'fade-in');
+        }
+
+        // Add to history
+        function addToHistory(word, type) {
+            // Limit to 12 items
+            if (history.length >= 12) history.shift();
+            
+            history.push({ word, type });
+            updateHistory();
+        }
+
+        // Update history display
+        function updateHistory() {
+            wordHistory.innerHTML = '';
+            
+            history.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.textContent = item.word;
+                historyItem.title = item.type || 'custom word';
+                
+                historyItem.addEventListener('click', () => {
+                    showWord(item.word, item.type);
+                    wordDisplay.classList.add('pulse');
+                });
+                
+                wordHistory.appendChild(historyItem);
+            });
+        }
+
+        // Save custom words
+        function saveCustomWords() {
+            const wordsText = wordListTextarea.value;
+            
+            customWords = wordsText.split(/[\n,]+/)
+                .map(word => word.trim())
+                .filter(word => word.length > 0);
+            
+            localStorage.setItem('customWords', customWords.join(','));
+            
+            showWord('Words saved!', '');
+            wordDisplay.classList.add('pulse');
+            
+            setTimeout(() => generateRandomWord(), 1500);
+        }
+
+        // Reset to default words
+        function resetToDefaultWords() {
+            if (confirm('Reset to default word list? Your custom words will be deleted.')) {
+                customWords = [];
+                wordListTextarea.value = '';
+                localStorage.removeItem('customWords');
+                
+                showWord('Reset complete!', '');
+                wordDisplay.classList.add('pulse');
+                
+                setTimeout(() => generateRandomWord(), 1500);
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+  </html>
