@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Word Generator | Spark Creativity</title>
-    <meta name="description" content="Generate random words instantly for creative writing, brainstorming, and word games. Customize your own word lists.">
-    <meta name="keywords" content="random word generator, creative writing, brainstorming tool, vocabulary builder, word game">
+    <title>Ultimate Word Generator | Unlimited Random Words</title>
+    <meta name="description" content="Generate unlimited random words with definitions. Perfect for writers, students, and word games. Supports monetization through ads.">
+    <meta name="keywords" content="random word generator, word with definition, vocabulary builder, writing tool, word game helper">
     <style>
         :root {
             --primary: #6C5CE7;
@@ -142,12 +142,40 @@
             width: 120px;
         }
 
+        .word-info {
+            margin-top: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .word-type {
-            font-size: 1.2rem;
-            color: var(--dark);
-            opacity: 0.7;
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .word-definition {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .word-example {
             font-style: italic;
-            min-height: 1.5rem;
+            color: var(--dark);
+            opacity: 0.8;
+            border-left: 3px solid var(--secondary);
+            padding-left: 1rem;
+            margin-top: 0.5rem;
         }
 
         .generate-btn {
@@ -232,6 +260,24 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .ad-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem auto;
+            text-align: center;
+            border: 1px dashed #ccc;
+            max-width: 800px;
+        }
+
+        .ad-label {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .word-list-section {
@@ -391,6 +437,21 @@
             animation: pulse 0.5s ease;
         }
 
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 1rem auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             h1 {
@@ -419,23 +480,49 @@
             .btn {
                 width: 100%;
             }
+            
+            .word-info {
+                padding: 1rem;
+            }
         }
     </style>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+            crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Dynamic Word Generator</h1>
-            <p class="subtitle">Spark creativity with random words</p>
+            <h1>Ultimate Word Generator</h1>
+            <p class="subtitle">Unlimited random words with definitions</p>
         </div>
     </header>
 
     <main>
         <div class="container">
+            <!-- Top Ad Banner -->
+            <div class="ad-container">
+                <div class="ad-label">Advertisement</div>
+                <!-- AdSense Ad Unit -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="XXXXXXXXXX"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
             <div class="generator-container">
                 <div class="word-display-section">
                     <div id="wordDisplay" class="word-display">Ready</div>
-                    <div id="wordType" class="word-type"></div>
+                    <div id="wordInfo" class="word-info" style="display: none;">
+                        <div id="wordTypeBadge" class="word-type">noun</div>
+                        <div id="wordDefinition" class="word-definition"></div>
+                        <div id="wordExample" class="word-example"></div>
+                    </div>
                     
                     <button id="generateBtn" class="generate-btn">
                         <span class="btn-text">Generate Word</span>
@@ -444,28 +531,42 @@
                     
                     <div class="controls">
                         <div class="control-group">
-                            <label for="wordCategory">Category</label>
-                            <select id="wordCategory">
-                                <option value="all">All Words</option>
-                                <option value="nouns">Nouns</option>
-                                <option value="verbs">Verbs</option>
-                                <option value="adjectives">Adjectives</option>
-                                <option value="custom">Custom Only</option>
+                            <label for="wordDifficulty">Difficulty</label>
+                            <select id="wordDifficulty">
+                                <option value="all">All Levels</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
                             </select>
                         </div>
                         
                         <div class="control-group">
-                            <label for="wordLength">Length</label>
-                            <select id="wordLength">
-                                <option value="any">Any Length</option>
-                                <option value="short">Short (1-5 letters)</option>
-                                <option value="medium">Medium (6-9 letters)</option>
-                                <option value="long">Long (10+ letters)</option>
+                            <label for="wordLanguage">Language</label>
+                            <select id="wordLanguage">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
                             </select>
                         </div>
                     </div>
                     
                     <div id="wordHistory" class="history"></div>
+                </div>
+                
+                <!-- Middle Ad Banner -->
+                <div class="ad-container">
+                    <div class="ad-label">Advertisement</div>
+                    <!-- AdSense Ad Unit -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                         data-ad-slot="XXXXXXXXXX"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 </div>
                 
                 <div class="word-list-section">
@@ -480,6 +581,21 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Bottom Ad Banner -->
+            <div class="ad-container">
+                <div class="ad-label">Advertisement</div>
+                <!-- AdSense Ad Unit -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="XXXXXXXXXX"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
         </div>
     </main>
 
@@ -491,56 +607,33 @@
                 <a href="#" class="footer-link">Terms</a>
                 <a href="#" class="footer-link">Contact</a>
             </div>
-            <p class="copyright">&copy; <span id="currentYear"></span> Dynamic Word Generator. All rights reserved.</p>
+            <p class="copyright">&copy; <span id="currentYear"></span> Ultimate Word Generator. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Default word lists
-        const defaultWordLists = {
-            all: [],
-            nouns: [
-                'apple', 'mountain', 'ocean', 'book', 'computer',
-                'tree', 'house', 'car', 'phone', 'dog',
-                'cat', 'city', 'country', 'planet', 'universe',
-                'teacher', 'doctor', 'engineer', 'artist', 'writer',
-                'river', 'forest', 'desert', 'island', 'volcano'
-            ],
-            verbs: [
-                'run', 'jump', 'swim', 'think', 'create',
-                'build', 'destroy', 'imagine', 'write', 'read',
-                'speak', 'listen', 'learn', 'teach', 'grow',
-                'change', 'evolve', 'adapt', 'discover', 'explore',
-                'dance', 'sing', 'paint', 'compose', 'invent'
-            ],
-            adjectives: [
-                'happy', 'sad', 'angry', 'joyful', 'peaceful',
-                'colorful', 'bright', 'dark', 'light', 'heavy',
-                'fast', 'slow', 'big', 'small', 'tall',
-                'short', 'long', 'wide', 'narrow', 'deep',
-                'mysterious', 'magical', 'ancient', 'modern', 'futuristic'
-            ]
-        };
-
-        // Combine all words
-        defaultWordLists.all = [...defaultWordLists.nouns, ...defaultWordLists.verbs, ...defaultWordLists.adjectives];
-
+        // Dictionary API configuration
+        const DICTIONARY_API = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
+        
         // DOM elements
         const wordDisplay = document.getElementById('wordDisplay');
-        const wordType = document.getElementById('wordType');
+        const wordInfo = document.getElementById('wordInfo');
+        const wordTypeBadge = document.getElementById('wordTypeBadge');
+        const wordDefinition = document.getElementById('wordDefinition');
+        const wordExample = document.getElementById('wordExample');
         const generateBtn = document.getElementById('generateBtn');
         const wordListTextarea = document.getElementById('wordList');
         const saveWordsBtn = document.getElementById('saveWords');
         const resetWordsBtn = document.getElementById('resetWords');
-        const wordCategory = document.getElementById('wordCategory');
-        const wordLength = document.getElementById('wordLength');
+        const wordDifficulty = document.getElementById('wordDifficulty');
+        const wordLanguage = document.getElementById('wordLanguage');
         const wordHistory = document.getElementById('wordHistory');
         const currentYear = document.getElementById('currentYear');
 
         // State
         let customWords = [];
         let history = [];
-        let wordLists = JSON.parse(JSON.stringify(defaultWordLists));
+        let isLoading = false;
 
         // Initialize
         function init() {
@@ -559,82 +652,140 @@
             saveWordsBtn.addEventListener('click', saveCustomWords);
             resetWordsBtn.addEventListener('click', resetToDefaultWords);
 
-            // Generate first word
-            generateRandomWord();
+            // Initialize ads
+            initAds();
         }
 
-        // Generate random word
-        function generateRandomWord() {
-            const category = wordCategory.value;
-            const lengthFilter = wordLength.value;
+        // Initialize Google AdSense
+        function initAds() {
+            // Ads are automatically loaded with the script in head
+            // Additional ad configurations can go here
+        }
 
-            // Get word pool
-            let wordPool = [];
+        // Generate random word from API
+        async function generateRandomWord() {
+            if (isLoading) return;
             
-            if (category === 'custom') {
-                wordPool = [...customWords];
-            } else {
-                wordPool = [...wordLists[category]];
-                if (category === 'all') wordPool = [...wordPool, ...customWords];
-            }
+            isLoading = true;
+            generateBtn.disabled = true;
+            wordDisplay.innerHTML = '<div class="spinner"></div>';
+            wordInfo.style.display = 'none';
 
-            // Filter by length
-            if (lengthFilter !== 'any') {
-                wordPool = wordPool.filter(word => {
-                    const len = word.length;
-                    if (lengthFilter === 'short') return len <= 5;
-                    if (lengthFilter === 'medium') return len >= 6 && len <= 9;
-                    if (lengthFilter === 'long') return len >= 10;
-                    return true;
-                });
-            }
-
-            // Check if we have words
-            if (wordPool.length === 0) {
-                showWord('No words available', '');
-                return;
-            }
-
-            // Select random word
-            const randomIndex = Math.floor(Math.random() * wordPool.length);
-            const selectedWord = wordPool[randomIndex].trim();
-
-            // Determine word type
-            let type = '';
-            if (category !== 'custom') {
-                if (category !== 'all') {
-                    type = category;
+            try {
+                // First try to get a random word from the API
+                const wordData = await fetchRandomWord();
+                
+                if (wordData) {
+                    displayWord(wordData.word, wordData);
+                    addToHistory(wordData.word, wordData);
                 } else {
-                    if (defaultWordLists.nouns.includes(selectedWord)) type = 'noun';
-                    else if (defaultWordLists.verbs.includes(selectedWord)) type = 'verb';
-                    else if (defaultWordLists.adjectives.includes(selectedWord)) type = 'adjective';
+                    // Fallback to local words if API fails
+                    const fallbackWord = getFallbackWord();
+                    displayWord(fallbackWord);
+                    addToHistory(fallbackWord);
+                }
+            } catch (error) {
+                console.error('Error fetching word:', error);
+                const fallbackWord = getFallbackWord();
+                displayWord(fallbackWord);
+                addToHistory(fallbackWord);
+            } finally {
+                isLoading = false;
+                generateBtn.disabled = false;
+            }
+        }
+
+        // Fetch random word from API
+        async function fetchRandomWord() {
+            // First get a random word
+            const randomWordRes = await fetch('https://random-word-api.herokuapp.com/word');
+            const [randomWord] = await randomWordRes.json();
+            
+            // Then get its definition
+            try {
+                const definitionRes = await fetch(`${DICTIONARY_API}${randomWord}`);
+                if (!definitionRes.ok) throw new Error('No definition found');
+                
+                const definitionData = await definitionRes.json();
+                return processWordData(randomWord, definitionData[0]);
+            } catch {
+                return { word: randomWord };
+            }
+        }
+
+        // Process word data from dictionary API
+        function processWordData(word, data) {
+            const result = { word };
+            
+            if (data.meanings && data.meanings.length > 0) {
+                const firstMeaning = data.meanings[0];
+                result.partOfSpeech = firstMeaning.partOfSpeech;
+                
+                if (firstMeaning.definitions && firstMeaning.definitions.length > 0) {
+                    const firstDefinition = firstMeaning.definitions[0];
+                    result.definition = firstDefinition.definition;
+                    
+                    if (firstDefinition.example) {
+                        result.example = firstDefinition.example;
+                    }
                 }
             }
-
-            // Display word
-            showWord(selectedWord, type);
-
-            // Add to history
-            addToHistory(selectedWord, type);
+            
+            if (data.phonetic) {
+                result.phonetic = data.phonetic;
+            }
+            
+            return result;
         }
 
-        // Display word with animation
-        function showWord(word, type) {
-            wordDisplay.classList.remove('active', 'fade-in', 'pulse');
-            void wordDisplay.offsetWidth; // Trigger reflow
+        // Get fallback word from local list
+        function getFallbackWord() {
+            const fallbackWords = [
+                'serendipity', 'quintessential', 'ephemeral', 'eloquent', 'luminous',
+                'resilience', 'petrichor', 'aurora', 'solitude', 'ethereal'
+            ];
             
+            return fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
+        }
+
+        // Display word with information
+        function displayWord(word, data = {}) {
             wordDisplay.textContent = word;
-            wordType.textContent = type ? `(${type})` : '';
-            
             wordDisplay.classList.add('active', 'fade-in');
+            
+            if (data.partOfSpeech || data.definition) {
+                wordInfo.style.display = 'block';
+                
+                if (data.partOfSpeech) {
+                    wordTypeBadge.textContent = data.partOfSpeech;
+                    wordTypeBadge.style.display = 'inline-block';
+                } else {
+                    wordTypeBadge.style.display = 'none';
+                }
+                
+                if (data.definition) {
+                    wordDefinition.textContent = data.definition;
+                } else {
+                    wordDefinition.textContent = "Definition not available";
+                }
+                
+                if (data.example) {
+                    wordExample.textContent = `Example: ${data.example}`;
+                    wordExample.style.display = 'block';
+                } else {
+                    wordExample.style.display = 'none';
+                }
+            } else {
+                wordInfo.style.display = 'none';
+            }
         }
 
         // Add to history
-        function addToHistory(word, type) {
-            // Limit to 12 items
-            if (history.length >= 12) history.shift();
+        function addToHistory(word, data = {}) {
+            // Limit to 10 items
+            if (history.length >= 10) history.shift();
             
-            history.push({ word, type });
+            history.push({ word, ...data });
             updateHistory();
         }
 
@@ -646,10 +797,13 @@
                 const historyItem = document.createElement('div');
                 historyItem.className = 'history-item';
                 historyItem.textContent = item.word;
-                historyItem.title = item.type || 'custom word';
+                
+                if (item.partOfSpeech) {
+                    historyItem.title = item.partOfSpeech;
+                }
                 
                 historyItem.addEventListener('click', () => {
-                    showWord(item.word, item.type);
+                    displayWord(item.word, item);
                     wordDisplay.classList.add('pulse');
                 });
                 
@@ -667,7 +821,7 @@
             
             localStorage.setItem('customWords', customWords.join(','));
             
-            showWord('Words saved!', '');
+            displayWord('Words saved!');
             wordDisplay.classList.add('pulse');
             
             setTimeout(() => generateRandomWord(), 1500);
@@ -680,7 +834,7 @@
                 wordListTextarea.value = '';
                 localStorage.removeItem('customWords');
                 
-                showWord('Reset complete!', '');
+                displayWord('Reset complete!');
                 wordDisplay.classList.add('pulse');
                 
                 setTimeout(() => generateRandomWord(), 1500);
@@ -691,4 +845,4 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-  </html>
+</html>
